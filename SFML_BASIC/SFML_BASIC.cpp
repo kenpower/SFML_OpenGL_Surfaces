@@ -98,24 +98,66 @@ void ParametricTorus(float t, float phi, float minorR, float majorR,float return
 
 }
 
+
+
+
 void DrawTorus() {
 	int stepsT = 20, stepsPHI = 10;
 
 	float dt = twoPI / stepsT, dphi = twoPI / stepsPHI;
 
 	float point[3];
-	float r = 0.2, R=0.5;
+	float r = 0.2, R = 0.5;
 
 	glBegin(GL_QUADS);
 	for (float t = 0; t <= twoPI; t += dt) {
 		for (float phi = 0; phi <= twoPI; phi += dphi) {
-			ParametricTorus(t, phi, r,R, point);
+			ParametricTorus(t, phi, r, R, point);
 			glVertex3fv(point);
 			ParametricTorus(t + dt, phi, r, R, point);
 			glVertex3fv(point);
 			ParametricTorus(t + dt, phi + dphi, r, R, point);
 			glVertex3fv(point);
 			ParametricTorus(t, phi + dphi, r, R, point);
+			glVertex3fv(point);
+
+		}
+	}
+	glEnd();
+}
+
+
+void ParametricSpiral(float u, float v, float r, float returnPoint[3]) {
+
+	
+	float tubeR = r, minorR = 0.15, majorR = 0.5, numTwists = 12;
+
+	returnPoint[0] = (minorR + tubeR*cos(u))*sin(v);
+	returnPoint[1] = ((minorR + tubeR*cos(u))*cos(v) + majorR)*cos(v / numTwists) - tubeR*sin(u)*sin(v / numTwists);
+	returnPoint[2] = ((minorR + tubeR*cos(u))*cos(v) + majorR)*sin(v / numTwists) + tubeR*sin(u)*cos(v / numTwists);
+
+
+
+}
+
+void DrawSpiral() {
+	int stepsT = 10, stepsPHI = 20;
+
+	float dt = twoPI / stepsT, dphi = twoPI / stepsPHI;
+
+	float point[3];
+	float r = 0.025;
+
+	glBegin(GL_QUADS);
+	for (float t = 0; t <= twoPI; t += dt) {
+		for (float phi = 0; phi <= 12 * twoPI; phi += dphi) {
+			ParametricSpiral(t, phi, r, point);
+			glVertex3fv(point);
+			ParametricSpiral(t + dt, phi, r, point);
+			glVertex3fv(point);
+			ParametricSpiral(t + dt, phi + dphi, r, point);
+			glVertex3fv(point);
+			ParametricSpiral(t, phi + dphi, r, point);
 			glVertex3fv(point);
 
 		}
@@ -206,6 +248,9 @@ int main()
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		DrawCylinder();
+		DrawSphere();
+		DrawTorus();
+		DrawSpiral();
 		   
         // Finally, display rendered frame on screen 
         App.display(); 
